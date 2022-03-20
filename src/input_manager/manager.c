@@ -11,7 +11,7 @@
  * resulting strings. Equivalent to Python's str.split(sep).
  */
 static char **split_by_sep(char *str, char *sep)
-{
+{ 
   char **new_str = calloc(MAX_SPLIT, sizeof(char *));
   int index = 0, len;
 

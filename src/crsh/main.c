@@ -1,6 +1,9 @@
 #include <stdio.h>
 
 #include "../input_manager/manager.h"
+#include "../commands/hello/hello.h"
+#include "../commands/sum/sum.h"
+#include "../commands/prime/prime.h"
 
 int main(int argc, char const *argv[])
 {
@@ -38,10 +41,3 @@ int main(int argc, char const *argv[])
   
   free_user_input(input);
 }
-
-
-
-Cosas por hacer:
-- Averiguar como funcionan los punteros.
-- Hacer el manejo de strings (if ... ) (*averiguar manera de manejar numeros inputs, raul)
-- modularizar los comandos.

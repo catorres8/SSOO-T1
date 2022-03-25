@@ -1,13 +1,13 @@
 
 // Un numero es primo si solo es divisible por 1 y por si mismo
-char is_prime(int numero)
+void is_prime(int a)
 {
     char mensaje[];
 
     // Caso de numero invalido
-    if (numero < 2)
+    if a < 2)
     {
-        mensaje = "El numero entregado no es valido";
+        mensaje = "El numero entregado no es primo";
     }
 
     // Caso de numero par distinto de 2
@@ -27,16 +27,17 @@ char is_prime(int numero)
     { 
         // Bucle que determina si el numero es divisible por algun numero
         // entre 2 y n-1
+        mensaje = ""
         for (int i = 2; i < a; i++)
         {
-            if (numero % i == 0)
+            if (a % i == 0)
             {
                 mensaje = "El numero entregado no es primo";
             }
             
         }
 
-        if (mensaje == "vacio") //Corregir
+        if (mensaje == "")
         {
             mensaje = "El numero entregado es primo";
         }
@@ -44,7 +45,7 @@ char is_prime(int numero)
         
     }
 
-    return mensaje
+    printf("%c\n", mensaje);
 }
 
 // codigo reducible*

@@ -1,5 +1,7 @@
-char hello () 
+void hello () 
 {
-    char mensaje = "Hello World!"
-    return mensaje
+    char mensaje = "Hello World!\n"
+    printf(mensaje);
+    "o podria ser:"
+    printf("Hello %s", "World!");
 }

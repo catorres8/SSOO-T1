@@ -6,4 +6,4 @@
 
 
 // Declare functions
-char sum(float a, float b);
+void sum(float a, float b);

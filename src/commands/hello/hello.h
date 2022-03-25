@@ -6,4 +6,4 @@
 
 
 // Declare functions
-char hello();
+void hello();

@@ -6,4 +6,4 @@
 
 
 // Declare functions
-char is_prime(int numero)
+void is_prime(int numero)

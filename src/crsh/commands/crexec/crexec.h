@@ -7,4 +7,4 @@
 
 // Declare functions
 char crexec (char* ejecutable, char* input); 
-int checkIfFileExists(const char* ejecutable);
+void checkIfFileExists(const char* ejecutable);

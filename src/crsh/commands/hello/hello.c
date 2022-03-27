@@ -2,6 +2,5 @@
 
 void hello () 
 {
-    printf("Hello %s", "World!");
-    //holiwiiiii
+    printf("Hello %s", "World!\n");
 }

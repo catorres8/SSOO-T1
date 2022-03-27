@@ -54,6 +54,9 @@ int main(int argc, char const *argv[])
       }
     }
 
+    //else if strcmp(input[0],"crexec") == 0)
+    //{}
+
     else if (strcmp(input[0],"crexit") == 0)
     {
       n = 0;
@@ -61,7 +64,7 @@ int main(int argc, char const *argv[])
 
     else
     {
-      printf("Ingrese un comando valido");
+      printf("Ingrese un comando valido\n");
     }
 
     free_user_input(input);

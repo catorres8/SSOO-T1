@@ -6,4 +6,4 @@
 
 
 // Declare functions
-void is_prime(int numero)
+void sum(char* a, char* b);

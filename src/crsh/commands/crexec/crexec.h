@@ -6,4 +6,5 @@
 
 
 // Declare functions
-void sum(float a, float b);
+char crexec (char* ejecutable, char* input); 
+int checkIfFileExists(const char* ejecutable);

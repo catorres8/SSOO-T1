@@ -3,7 +3,7 @@
 #include<sys/stat.h> // se importa para el stat
 
 
-char crexec (char ejecutable, char input) 
+char crexec (char* ejecutable, char* input) 
 {
     if (checkIfFileExists(ejecutable))
     {
@@ -12,21 +12,24 @@ char crexec (char ejecutable, char input)
     
         execl ( binaryPath , arg1 , NULL ) ;
     }
-    
     else
     {
-      printf("Error: El archivo no existe")  
+      printf("Error: El archivo no existe");
     }    
 }
 
-
-int checkIfFileExists(const char* ejecutable){
+int checkIfFileExists(const char* ejecutable)
+{
     struct stat buffer;
     int exist = stat(ejecutable,&buffer);
     if(exist == 0)
+    {
         return 1;
-    else  
+    }
+    else
+    {  
         return 0;
+    }
 }
 
 // REFERENCIA:

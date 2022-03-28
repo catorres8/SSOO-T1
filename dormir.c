@@ -13,7 +13,7 @@ void dormir(int tiempo)
 
 int main(int argc, char const *argv[])
 {
-    int tiempo = atoi(argv[0]);
+    int tiempo = atoi(argv[1]);
     dormir(tiempo);
     return 0;
 }

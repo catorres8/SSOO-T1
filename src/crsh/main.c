@@ -50,7 +50,7 @@ int main(int argc, char const *argv[])
       int a = fork();
       if (a == 0)
       {
-        crexec(input[1], input[2]);
+        crexec(input);
       }
     }
 

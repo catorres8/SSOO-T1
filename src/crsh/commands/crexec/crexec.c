@@ -3,14 +3,11 @@
 #include<sys/stat.h> // se importa para el stat
 
 
-void crexec (char* ejecutable, char* input) 
+void crexec (char **inputs) 
 {
-    char * binaryPath = ejecutable ; //ruta del archivo binario ejecutable
-    char * arg1 = input ; //argumento que desea pasar al ejecutable
-    
-    //printf("Eeste es el input , o sea el argumento :D - %i", *arg1);
+    char *exeName = inputs[1]; //ruta del archivo binario ejecutable    
+    char **args =  inputs + 1; //argumento que desea pasar al ejecutable
 
-    int exe = execl ( binaryPath , input , NULL );
+    int exe = execv(exeName, args);
     printf("Error: El archivo no existe - %i", exe);
-       
 }

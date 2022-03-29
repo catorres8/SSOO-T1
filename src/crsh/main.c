@@ -124,10 +124,23 @@ int main(int argc, char const *argv[])
 
       while (int i = 0; i < 300)
       {
-        kill(pid_array[i], SIGINT);
+        if (pid_array[i] != 0)
+        {
+          kill(pid_array[i], SIGINT);
+        }        
+        i++;
       }
-      sleep(15)
       
+      sleep(15);
+
+      while (int i = 0; i < 300)
+      {
+        if (pid_array[i] != 0)
+        {
+          wait(pid_array[i]);
+        }
+        i++;
+      }
       
     }
 

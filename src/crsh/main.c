@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
+#include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
@@ -9,6 +11,35 @@
 #include "commands/sum/sum.h"
 #include "commands/prime/prime.h"
 #include "commands/crexec/crexec.h"
+
+
+int pid_append (int pid_num)
+{
+  int i = 1;
+  int guardado = 0; // Variable para realizar debug
+  while(i < 300)
+  {
+    if (pid_array[i] == 0)
+      {
+        pid_array[i] = pid_num; //GUARDO pid del proceso
+        guardado = 1;
+      }
+    i += 1;
+  }
+
+  // if (guardado == 0)
+  // {
+  //  /Posible error al sobrepasar el stack de pid??
+  // }
+
+  return 0;
+}
+
+void sigHandler(int signum) {
+   printf("Caught signal %d, coming out...\n", signum);
+   exit(1);
+}
+
 
 int main(int argc, char const *argv[])
 {
@@ -29,25 +60,13 @@ int main(int argc, char const *argv[])
       
       if (a == 0)
       {
+        signal(SIGINT, sigHandler);
         hello();  //hasta aqui funcionaba
-        exit(0);
       }
       else if (a > 0)
       {
-        
-      //agregamos procesos al arreglo
-      int i = 0
-      int condicion = 1
-      while(condicion == 1)
-      {
-        if (pid_array[i] == 0)
-          {
-            pid_array[i] = a //GUARDO pid del proceso
-            condicion = 0 
-          }
-        i += 1
-      }
-      //
+        //agregamos procesos al arreglo
+        pid_append(a);
       }
     }
     
@@ -56,7 +75,13 @@ int main(int argc, char const *argv[])
       int a = fork();
       if (a == 0)
       {
+        signal(SIGINT, sigHandler);
         sum(input[1], input[2]);
+      }
+      else
+      {
+        //agregamos procesos al arreglo
+        pid_append(a);
       }
     }
 
@@ -65,7 +90,13 @@ int main(int argc, char const *argv[])
       int a = fork();
       if (a == 0)
       {
+        signal(SIGINT, sigHandler);
         is_prime(input[1]);
+      }
+      else
+      {
+        //agregamos procesos al arreglo
+        pid_append(a);
       }
     }
 
@@ -74,11 +105,17 @@ int main(int argc, char const *argv[])
       int a = fork();
       if (a == 0)
       {
+        signal(SIGINT, sigHandler);
         crexec(input);
+      }
+      else
+      {
+        //agregamos procesos al arreglo
+        pid_append(a);
       }
     }
 
-    //else if strcmp(input[0],"crexec") == 0)
+    //else if strcmp(input[0],"crlist") == 0)
     //{}
 
     else if (strcmp(input[0],"crexit") == 0)
@@ -87,8 +124,10 @@ int main(int argc, char const *argv[])
 
       while (int i = 0; i < 300)
       {
-        waitpid(pid_array[i], &status, );
+        kill(pid_array[i], SIGINT);
       }
+      sleep(15)
+      
       
     }
 

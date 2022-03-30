@@ -20,6 +20,7 @@
 int *pid_array;
 
 /* FUNCIONES */
+// AGREGO PROCESOS HIJOS A UN ARREGLO
 int pid_append (int pid_num, int *pid_array)
 {
   int i = 0;
@@ -28,6 +29,24 @@ int pid_append (int pid_num, int *pid_array)
     if (pid_array[i] == 0)
       {
         pid_array[i] = pid_num; //GUARDO PID del proceso
+        i = 300;
+      }
+    i += 1;
+  }
+  return 0;
+}
+
+// AGREGLO "NOMBRE COMANDO" DE PROCESOS HIJOS A UN ARREGLO
+int comando_append (char **input, char *comando_array) //le puse * a primer argumennto porque me habia dado errroor :C
+{
+  int i = 0;
+  while(i < 300)
+  {
+    if (comando_array[i] == 0)
+      {
+        printf("esto es comando_array[i] = %s\n",comando_array[i]);
+        printf("esto es input[0] = %s\n,",input[0]);
+        comando_array[i] = input[0]; //GUARDO el nombre del comando del proceso
         i = 300;
       }
     i += 1;
@@ -53,7 +72,11 @@ int main(int argc, char const *argv[])
   //Manejo de SIGINT para 'main'
   signal(SIGINT, sigHandlerMain);
   
+  // CREO ARRAY DE PROCESOS HIJOS (SUS PID)
   int *pid_array = calloc(300, sizeof(int)); //definimos un arreglo
+  // CREO ARRAY DE "NOMBRE DE COMANDOS" DE PROCESOS HIJOS
+  char *comandos_array = calloc(300, sizeof(char)); //definimos un arreglo
+
 
   int n = 1;
   while (n == 1)
@@ -73,11 +96,14 @@ int main(int argc, char const *argv[])
         signal(SIGINT, sigHandler);
 
         hello();
+        exit(0);
       }
       else if (a > 0)
       {
         // Agregamos procesos al arreglo
         pid_append(a, pid_array);
+        comando_append(input, comandos_array);
+        printf("ESTOOOOOOOOOOOOO ES INPUT[0] = %s\n", input[0]);
       }
     }
     
@@ -135,7 +161,7 @@ int main(int argc, char const *argv[])
     // CRLIST
     else if (strcmp(input[0],"crlist") == 0)
     {
-      crlist(pid_array);
+      crlist(pid_array, comandos_array);
     }
 
     // CREXIT

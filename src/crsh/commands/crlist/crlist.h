@@ -6,4 +6,4 @@
 
 
 // Declare functions
-void crlist(int *array);
+void crlist(int *array, char *comandos);

@@ -17,7 +17,7 @@
 
 
 /* VAR GLOBALES */
-int *pid_array;
+int pid_array[300];
 
 /* FUNCIONES */
 // AGREGO PROCESOS HIJOS A UN ARREGLO
@@ -29,7 +29,7 @@ int pid_append (int pid_num, int *pid_array)
     if (pid_array[i] == 0)
       {
         pid_array[i] = pid_num; //GUARDO PID del proceso
-        i = 300;
+        return i;
       }
     i += 1;
   }
@@ -37,20 +37,12 @@ int pid_append (int pid_num, int *pid_array)
 }
 
 // AGREGLO "NOMBRE COMANDO" DE PROCESOS HIJOS A UN ARREGLO
-int comando_append (char **input, char *comando_array) //le puse * a primer argumennto porque me habia dado errroor :C
+int comando_append (char *nombre, char **comando_array, int i) //le puse * a primer argumennto porque me habia dado errroor :C
 {
-  int i = 0;
-  while(i < 300)
-  {
-    if (comando_array[i] == 0)
-      {
-        printf("esto es comando_array[i] = %s\n",comando_array[i]);
-        printf("esto es input[0] = %s\n,",input[0]);
-        comando_array[i] = input[0]; //GUARDO el nombre del comando del proceso
-        i = 300;
-      }
-    i += 1;
-  }
+
+  int largo = strlen(nombre);
+  comando_array[i] = malloc(largo * sizeof(char));
+  strcpy(comando_array[i], nombre);
   return 0;
 }
 
@@ -69,21 +61,19 @@ void sigHandlerMain(int signum)
 /* MAIN */
 int main(int argc, char const *argv[])
 {
-  //Manejo de SIGINT para 'main'
-  signal(SIGINT, sigHandlerMain);
-  
   // CREO ARRAY DE PROCESOS HIJOS (SUS PID)
   int *pid_array = calloc(300, sizeof(int)); //definimos un arreglo
-  // CREO ARRAY DE "NOMBRE DE COMANDOS" DE PROCESOS HIJOS
-  char *comandos_array = calloc(300, sizeof(char)); //definimos un arreglo
 
+  // CREO ARRAY DE "NOMBRE DE COMANDOS" DE PROCESOS HIJO
+  char **comandos_array = malloc(300 * sizeof(char *));
+
+  //Manejo de SIGINT para 'main'
+  signal(SIGINT, sigHandlerMain);
 
   int n = 1;
   while (n == 1)
   {
     printf("> ");
-    //char A[50][3]; // Creacion arreglo para guardar informacion de los programas ejecutando
-
     char **input = read_user_input();
 
     // HELLO
@@ -101,9 +91,8 @@ int main(int argc, char const *argv[])
       else if (a > 0)
       {
         // Agregamos procesos al arreglo
-        pid_append(a, pid_array);
-        comando_append(input, comandos_array);
-        printf("ESTOOOOOOOOOOOOO ES INPUT[0] = %s\n", input[0]);
+        int indice = pid_append(a, pid_array);
+        comando_append(input[0], comandos_array, indice);
       }
     }
     
@@ -117,11 +106,13 @@ int main(int argc, char const *argv[])
         signal(SIGINT, sigHandler);
 
         sum(input[1], input[2]);
+        exit(0);
       }
       else if (a > 0)
       {
         // Agregamos procesos al arreglo
-        pid_append(a, pid_array);
+        int indice = pid_append(a, pid_array);
+        comando_append(input[0], comandos_array, indice);
       }
     }
 
@@ -135,11 +126,13 @@ int main(int argc, char const *argv[])
         signal(SIGINT, sigHandler);
 
         is_prime(input[1]);
+        exit(0);
       }
       else if (a > 0)
       {
         // Agregamos procesos al arreglo
-        pid_append(a, pid_array);
+        int indice = pid_append(a, pid_array);
+        comando_append(input[0], comandos_array, indice);
       }
     }
 
@@ -154,7 +147,8 @@ int main(int argc, char const *argv[])
       else if (a > 0)
       {
         // Agregamos procesos al arreglo
-        pid_append(a, pid_array);
+        int indice = pid_append(a, pid_array);
+        comando_append(input[1], comandos_array, indice);
       }
     }
 

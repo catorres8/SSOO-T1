@@ -12,14 +12,14 @@
  */
 static char **split_by_sep(char *str, char *sep)
 { 
-  char **new_str = calloc(MAX_SPLIT, sizeof(char *));
+  char **new_str = calloc(MAX_SPLIT, sizeof(char *)); //comando_array
   int index = 0, len;
 
-  char *token = strtok(str, sep);
-  while (token != NULL)
+  char *token = strtok(str, sep); // input = *string = {sum,1, 2,'\0'}
+  while (token != NULL)           // si existe input
   {
-    new_str[index] = calloc(BUFFER_SIZE, sizeof(char));
-    strcpy(new_str[index++], token);
+    new_str[index] = calloc(BUFFER_SIZE, sizeof(char)); //comando_array[i] = calloc ...
+    strcpy(new_str[index++], token); // strcpy(comando_array[i++], &input[0]);
     token = strtok(NULL, sep);
   }
 

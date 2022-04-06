@@ -23,5 +23,19 @@ int main(int argc, char const *argv[])
 		printf("\n");
 	}
 
+	/*Escritura del output*/
+	char *output_name = (char *)argv[2];
+	printf("Output_name: %s\n", output_name);
+
 	input_file_destroy(input_file);
 }
+
+/*
+typedef struct outputfile {
+  int len;
+  char*** lines;  // This is an array of arrays of strings
+} OutputFile;
+
+OutputFile* write_file(char* filename)
+{
+*/

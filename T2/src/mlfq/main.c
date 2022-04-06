@@ -4,6 +4,14 @@
 #include "../queue/queue.h"
 #include "../file_manager/manager.h"
 
+
+int write_file(filename)
+{
+	/* Formato de impresion en el archivo 'output.csv */
+	/* 'nombre_proceso,turnos_cpu,interrupciones,turnaround_time,responce_time,waiting_time' */
+	return 0;
+}
+
 int main(int argc, char const *argv[])
 {
 	/*Lectura del input*/

@@ -4,5 +4,11 @@
 // Define compile-time constants
 
 // Define the struct
+typedef struct queue
+{
+    int quantum;
+    struct process* processes;
+} Queue;
+
 
 // Declare functions

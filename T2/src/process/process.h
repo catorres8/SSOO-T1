@@ -28,3 +28,5 @@ typedef struct process
 } Process;
 
 // Declare functions
+Process* process_init();
+Process* process_IDLE();

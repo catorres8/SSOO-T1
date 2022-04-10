@@ -9,78 +9,54 @@
 // La cola numero 1 es la de prioridad intermedia; Funciona con esquema FIFO.
 // La cola numero 0 es la de menor prioridad; Funciona con esquema SJF
 
-Queue* init(Process* proceso, int tipo)
+Nodo* init(Process* proceso, int tipo)
 {
-    Queue* cola = malloc(sizeof(Queue));
-    *cola = (Queue) {
-        .queue_type = tipo,
+    Nodo* cola = malloc(sizeof(Nodo));
+    *cola = (Nodo) {
+        .tipo_cola = tipo,
         .proceso = proceso,
         .next = NULL,
     };
     return cola;
 }
 
-void append(Queue* cola, Process* proceso) {
-    if (cola->queue_type == 0) // Aqui hacemos mecanica FIFO
+void append(Nodo* cabeza, Process* proceso)
+{
+    if (cabeza->proceso == NULL)
+    {
+        cabeza->proceso = proceso;
+    }
+    
+    else if (cabeza->tipo_cola == 0)
     {
         // vamos al final de la cola
-        Queue *ultimo = cola;
+        Nodo* ultimo = cabeza;
         while (ultimo->next) {
             ultimo = ultimo->next;
         }
-
-        // creamos el nuevo nodo
-        Queue *new_list = init(proceso, cola->queue_type);
-
-        // Lo agregamos como el nodo siguiente al ultimo nodo de la lista
-        ultimo->next = new_list;
+        Nodo* nuevo_nodo = init(proceso, 0);
+        ultimo->next = nuevo_nodo;
     }
-    else                       // Aqui hacemos mecanica SJF
+
+    else
     {
-        /* code 
-        - recorro cola, 
-        - y comparo mi proceso.quantum, con cada proceso,quantum de la cola 
-            - si mi proceso.quantum < a cada proceso.quantum de la cola:
-                - 
-        - luego la recorro, la menor, y agrego a otra lista ligada (en donde estaran ordenado por SFJ)
-        mmmm ta raro
-        */
+        Nodo* nodo_nuevo = init(proceso, 1);
+        cabeza = insertar_ordenado(cabeza, nodo_nuevo);
     }
 }
 
-void append(Queue* cola, Process* proceso) {
-    if (cola->queue_type == 0) // Aqui hacemos mecanica FIFO
-    {
-        // vamos al final de la cola
-        Queue *ultimo = cola;
-        while (ultimo->next) {
-            ultimo = ultimo->next;
-        }
 
-        // creamos el nuevo nodo
-        Queue *new_list = init(proceso, tipo);
-
-        // Lo agregamos como el nodo siguiente al ultimo nodo de la lista
-        ultimo->next = new_list;
-    }
-    else                       // Aqui hacemos mecanica SJF
-    {
-        inicio = insertar_ordenado(inicio, proceso); //este inicio tiene que inicializarse en main como   Queue*inicio=nullptr (indica que aun no se apunta a nada, entonces lista es vacia)
-    } 
-}
-
-
-// Funcion que se encarga de insertar, ordenadamente (por quantum), los procesos a la cola SFj
+// Funcion que se encarga de insertar, ordenadamente (por quantum), los procesos a la cola SFJ
 /* Dado el puntero inicial a una lista y el puntero a un nuevo nodo que aún no está en la lista, inserta este nuevo nodo en orden ascendente. Retorna el puntero inicial. */
-Queue* insertar_ordenado(Queue* inicio, Queue* nuevo) { //ese inicio en el main se definira al principio e ira moviendose. Y ese nuevo es "la cola chica" que quiero ingresar
+Nodo* insertar_ordenado(Nodo* inicio, Nodo* nuevo) { //ese inicio en el main se definira al principio e ira moviendose. Y ese nuevo es "la cola chica" que quiero ingresar
 
     // si lista está vacía
-    if (inicio == nullptr) {
+    if (inicio == NULL) {
         inicio = nuevo;
     }
 
     // si el elemento es el menor
-    if (nuevo->proceso.q < inicio->proceso.q) {
+    if (nuevo->proceso->cycles < inicio->proceso->cycles) {
     nuevo->next = inicio;
     inicio = nuevo;
     }
@@ -90,17 +66,17 @@ Queue* insertar_ordenado(Queue* inicio, Queue* nuevo) { //ese inicio en el main 
     //del 1ª nodo de de la lista.
     else {
         //Guardamos el inicio de la lista
-        Queue* aux = inicio;
+        Nodo* aux = inicio;
         //nos movemos por los elementos de la lista
-        while (aux->next != nullptr && aux->next->proceso.q  <  nuevo->proceso.q) {
+        while (aux->next != NULL && aux->next->proceso->cycles  <  nuevo->proceso->cycles) {
             aux = aux->next;
         }
         // Si llegamos al final de la lista (o sea el elemento.q es el mayor):
-        if (aux->next == nullptr) {
-            aux->next = nuevo
+        if (aux->next == NULL) {
+            aux->next = nuevo;
         }
         // si el elemento es intermedio
-        if (aux->next->proceso.q > nuevo.proceso.q) {
+        if (aux->next->proceso->cycles > nuevo->proceso->cycles) {
             nuevo->next = aux->next;
             aux->next = nuevo;
         }
@@ -109,39 +85,53 @@ Queue* insertar_ordenado(Queue* inicio, Queue* nuevo) { //ese inicio en el main 
     return inicio;
 }
 
-// CODIGO ANTERIOR
+/* 
+Funcion que entrega el Proceso del NodoCabeza de la Cola,
+asignando como nuevo NodoCabeza al siguiente Nodo de la Cola 
+*/
+//REVISAR: ELIMINAR DE MEMORIA AL NODO
+Process* pop_head(Nodo* cola)
+{
+    Process* proceso = cola->proceso;
+    if (cola->next != NULL)
+    {
+        cola = cola->next;
+    }
+    else
+    {
+        cola->proceso = NULL;
+    }
 
-// typedef struct queue
-// {
-//     int queue_type; // 0 = FIFO; 1 = SJF
-//     int priority;
-//     int quantum;
-//     struct queue* previous; // Rerferencia al elemento anterior
-//     struct queue* next;    // Referencia al elemento siguiente
-// } Queue;
+    return proceso;
+}
 
+Process* pop_nodo(Nodo* cabeza, Nodo* objetivo)
+{
+    if (cabeza == objetivo)
+    {
+        Process* proceso = cabeza->proceso;
+        if (cabeza->next != NULL)
+        {
+            cabeza = cabeza->next;
+            //IMPORTANTE: eliminar cabeza
+        }
+        else
+        {
+            cabeza->proceso = NULL;
+        }
+        return proceso;
+    }
 
-// Queue* init(int tipo, int prioridad, int input_q){
-//     Queue* cola = malloc(sizeof(Queue));
-//     *cola = (Queue) {
-//         .queue_type = tipo,
-//         .priority = prioridad,
-//         .quantum = prioridad * input_q,
-//         .processes = malloc(Process),
-//         .previous = NULL,
-//         .next = NULL,
-//     }
-//     return cola
-// }
+    Nodo* nodo_anterior = cabeza;
+    Nodo* nodo_actual = cabeza->next;
+    while (nodo_actual != objetivo)
+    {
+        nodo_anterior = nodo_actual;
+        nodo_actual = nodo_actual->next;
+    }
+    Process* proceso = nodo_actual->proceso;
+    nodo_anterior->next = nodo_actual->next; // Conecto el nodo_anterior con el sucesor del nodo_actual
+    //IMPORTANTE: eliminar nodo_actual
 
-
-// void append(Queue* cola, process* proceso) {
-//     if (cola->queue_type == 0)
-//     {
-//         /* code */
-//     }
-//     else
-//     {
-//         /* code */
-//     }
-// }
+    return proceso;
+}

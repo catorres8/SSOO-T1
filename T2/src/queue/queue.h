@@ -7,17 +7,19 @@
 
 
 // Define the struct
-typedef struct queue
+typedef struct nodo
 {
-    int queue_type; // 0 = FIFO; 1 = SJF
+    int tipo_cola; // 0 = FIFO; 1 = SJF
 
-    Process proceso; // cada elemento de la cola tiene un proceso
-    struct queue* next; // cada proceso tiene un siguiente proceso
+    //Process* proceso; 
+    Process* proceso; // cada elemento de la cola tiene un proceso // VEEEEEEEEEEEEEEEERR!!!!
+    struct nodo* next; // cada proceso tiene un siguiente proceso
     
-} Queue; 
+} Nodo; 
 
 
 // Declare functions
-Queue* init(Process* proceso, int tipo);
-void append(Queue* cola, Process* proceso);
-Queue* insertar_ordenado(Queue* inicio, Queue* nuevo);
+Nodo* init(Process* proceso, int tipo);
+void append(Nodo* nodo, Process* proceso);
+Nodo* insertar_ordenado(Nodo* inicio, Nodo* nuevo);
+Process* pop_head(Nodo* cola);

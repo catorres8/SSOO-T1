@@ -11,7 +11,6 @@ typedef struct nodo
 {
     int tipo_cola; // 0 = FIFO; 1 = SJF
 
-    //Process* proceso; 
     Process* proceso; // cada elemento de la cola tiene un proceso // VEEEEEEEEEEEEEEEERR!!!!
     struct nodo* next; // cada proceso tiene un siguiente proceso
     
@@ -23,3 +22,4 @@ Nodo* init(Process* proceso, int tipo);
 void append(Nodo* nodo, Process* proceso);
 Nodo* insertar_ordenado(Nodo* inicio, Nodo* nuevo);
 Process* pop_head(Nodo* cola);
+Process* pop_nodo(Nodo* cabeza, Nodo* objetivo);

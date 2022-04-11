@@ -21,13 +21,14 @@ Nodo* init(Process* proceso, int tipo)
 }
 
 void append(Nodo* cabeza, Process* proceso)
-{
+
+{   //si lista es vacia
     if (cabeza->proceso == NULL)
     {
         cabeza->proceso = proceso;
     }
-    
-    else if (cabeza->tipo_cola == 0)
+    // si el nodo es tipo FIFO
+    else if (cabeza->tipo_cola == 0) 
     {
         // vamos al final de la cola
         Nodo* ultimo = cabeza;
@@ -38,6 +39,7 @@ void append(Nodo* cabeza, Process* proceso)
         ultimo->next = nuevo_nodo;
     }
 
+    // si el nodo es tipo SFJ
     else
     {
         Nodo* nodo_nuevo = init(proceso, 1);
@@ -70,6 +72,7 @@ Nodo* insertar_ordenado(Nodo* inicio, Nodo* nuevo) { //ese inicio en el main se 
         //nos movemos por los elementos de la lista
         while (aux->next != NULL && aux->next->proceso->cycles  <  nuevo->proceso->cycles) {
             aux = aux->next;
+            
         }
         // Si llegamos al final de la lista (o sea el elemento.q es el mayor):
         if (aux->next == NULL) {

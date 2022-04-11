@@ -7,13 +7,15 @@
 
 
 /* Funcion que asigna un Proceso a la CPU dependiendo de la Cola y el Estado del Proceso */
-void process_to_cpu(Nodo* cola, Process* CPU)
+Process* process_to_cpu(Nodo* cola, Process* CPU)
 {
 	Nodo* nodo_actual = cola;
-	while (nodo_actual != NULL)
+	while (nodo_actual->proceso != NULL)
 	{
+		printf("El proceso %s entrara en la CPU\n", nodo_actual->proceso->nombre);
 		if (nodo_actual->proceso->estado == 0)
 		{
+			printf("Entro en la CPU\n");
 			CPU = pop_nodo(cola, nodo_actual);
 			CPU->estado = 1;
 			CPU->turnos_cpu += 1;
@@ -22,6 +24,8 @@ void process_to_cpu(Nodo* cola, Process* CPU)
 		}
 		nodo_actual = nodo_actual->next;
 	}
+	printf("El proceso %s esta en la CPU\n", CPU->nombre);
+	return CPU;
 }
 
 /* Funcion que cambia del Estado WAITING a READY de un Proceso dependiendo de la Cola y el Estado del Proceso */
@@ -41,6 +45,24 @@ void wait_to_ready(Nodo* Cola)
 				nodo_actual->proceso->count_waiting += 1;
 			}
 		}
+		nodo_actual = nodo_actual->next;
+	}
+}
+
+void check_envejecimiento(int time, Nodo* cola_inicio, Nodo* cola_final)
+{
+	Nodo* nodo_actual = cola_inicio;
+	while (nodo_actual->proceso != NULL && nodo_actual != NULL)
+	{
+		printf("Este es el nodo actual: %s\n", nodo_actual->proceso->nombre);
+		printf("Su S es el: %d\n", nodo_actual->proceso->s);
+		if (((time - nodo_actual->proceso->init_time)%nodo_actual->proceso->s) == 0)
+		{
+			nodo_actual->proceso->prioridad = 2;
+			pop_nodo(cola_inicio, nodo_actual);
+			append(cola_final, nodo_actual->proceso);
+		}
+
 		nodo_actual = nodo_actual->next;
 	}
 }
@@ -68,6 +90,7 @@ int main(int argc, char const *argv[])
 {
 
 	int input_q = atoi(argv[3]);
+	// EXISTE???
 
 	/*Lectura del input*/
 	char *file_name = (char *)argv[1];
@@ -89,8 +112,8 @@ int main(int argc, char const *argv[])
 	}
 
 	// Instanciacion de los componentes del Scheduler 
-	Process* IDLE = process_init("IDLE", "-1", "0", "0", "0", "0", "0");
-	Process* CPU = IDLE;
+	// Process* IDLE = process_init("IDLE", "-1", "0", "0", "0", "0", "0");
+	Process* CPU = NULL;
 	int tiempo = 0;
 
 	// Instanciacion de las colas
@@ -112,22 +135,20 @@ int main(int argc, char const *argv[])
 		)
 	{
 		/* 1.- Actualizar procesos que cumplen su I/O-Burst (WAITING->READY) */
-		if (Cola_2->proceso !=NULL)
+		if (Cola_2->proceso != NULL)
 		{
 			wait_to_ready(Cola_2);
 		}
-		if (Cola_1->proceso !=NULL)
+		if (Cola_1->proceso != NULL)
 		{
 			wait_to_ready(Cola_1);
 		}
-		if (Cola_0->proceso !=NULL)
+		if (Cola_0->proceso != NULL)
 		{
 			wait_to_ready(Cola_0);
 		}
 		
 		/* 2.- Actualizar el estado del proceso en Running (si corresponde) (sacar procesos de CPU) */
-		// Pasa a waiting -> Se completa el atributo 'wait' o se le acaba el q
-		// Pasa a Finished -> Se completa el atributo 'cycles'
 		if (CPU != NULL)
 		{
 			if (CPU->count_cycles < CPU->cycles)
@@ -166,128 +187,93 @@ int main(int argc, char const *argv[])
 			}
 		}
 		/* 3.- Asignar los procesos a sus respectivas Colas */
-
-
-		/* ------------------ INGRESO A COLA 1 (FIFO) ----------------------------------- */
-		//  (bajó de prioridad de 2-->1)  o (proceso cedio la cpu en la cola de abajo ^ prioridad es 1 )
+		/* 3.1- Si un proceso salio de la CPU, ingresarlo a la cola correspondiente */
 		if (CPU != NULL)
 		{
-			if ((CPU->prioridad==1 && CPU->estado==0) || (CPU->estado==2 && CPU->prioridad==1))
+			if (CPU->estado == 0)
 			{
-				Process* proceso_a_agregar = CPU;
-				proceso_a_agregar->quantum = proceso_a_agregar->prioridad * input_q;
-				append(Cola_1, proceso_a_agregar); //agrego proceso a cola
-			}
-
-			/* ------------------ INGRESO A COLA 0 (SLF) ----------------------------------- */
-			//  (bajó de prioridad de 1-->0)  
-			else if (CPU->prioridad==0 && CPU->estado==0)
-			{
-				Process* proceso_a_agregar = CPU;
-				append(Cola_0, proceso_a_agregar); //agrego proceso a cola
-			}
-		
-
-		/* ------------------ INGRESO A COLA 2 (FIFO: MENOR T_INICIO) ------------------ */
-		//recorro lista de procesos
-		int minimo2 = list_process[0]->init_time; //guardo como minimo el tiempo del primer elemento
-		Process* proceso_a_agregar = list_process[0]; // puntero proceso 0
-		
-			for (int j=0; j<input_file->len; j+=1)
-			{
-				for (int i=0; i<input_file->len; i+=1)   //revisar el largo del arreglo D:
+				if (CPU->prioridad == 2)
 				{
-						int tiempo_proceso = list_process[i]->init_time; // tiempo del proceso i
-
-					// si proceso entra por primera vez, o (viene desde la cpu porque ya completo su wait o cedio la cpu en la cola de abajo ^ prioridad sigue siendo/es 2)
-					if ((list_process[i]->estado==0) || (CPU->estado==2 && CPU->prioridad==2))
-					{
-						//revisamos si proceso estra por primera vez, para sumarle al contador
-						if (list_process[i]->estado==0)
-						{
-							contador_procesos +=1;
-						}
-								
-						if (tiempo_proceso < minimo2)   // obtengo proceso de t_inicio menor
-						{
-							minimo2 = tiempo_proceso; // actualizo el minimo
-							proceso_a_agregar =  list_process[i]; // actualizo proceso_a_agregar
-						}
-					}
-
+					append(Cola_2, CPU);
 				}
-				if (proceso_a_agregar->init_time == tiempo)
+				else if (CPU->prioridad == 1)
 				{
-					proceso_a_agregar->quantum = proceso_a_agregar->prioridad * input_q;
-					append(Cola_2, proceso_a_agregar); //agrego proceso a cola 
-
-					printf("Este es el proceso:%s\n",proceso_a_agregar->nombre);
-					printf("Esta esel proceso desde la cola :%s\n",Cola_2->proceso->nombre);
-				}
-
-			}
-			
-		/* ------------------ INGRESO A COLA 2 desde Cola_1 (Por envejecimiento) ------------------ */
-
-			Nodo* cabeza1 = Cola_1;
-			// vamos al final de la cola
-			while (cabeza1->next) {
-				if (cabeza1->proceso->s == cabeza1->proceso->count_s)
-				{
-					Process* proceso_append = pop_nodo(Cola_1, cabeza1);
-					proceso_a_agregar->quantum = proceso_a_agregar->prioridad * input_q;
-					append(Cola_2, proceso_append);
+					append(Cola_1, CPU);
 				}
 				else
 				{
-					cabeza1->proceso->count_s += 1;
+					append(Cola_0, CPU);
 				}
-				cabeza1 = cabeza1->next;
+				CPU = NULL;
 			}
-		
-		/* ------------------ INGRESO A COLA 2 desde Cola_0 (Por envejecimiento) ------------------ */		
 
-			Nodo* cabeza0 = Cola_0;
-			while(cabeza0->next)
+			else if (CPU->estado == 2)
 			{
-				if (cabeza0->proceso->s == cabeza0->proceso->count_s)
+				if (CPU->prioridad == 2)
 				{
-					Process* proceso_append = pop_nodo(Cola_0, cabeza0);
-					proceso_a_agregar->quantum = proceso_a_agregar->prioridad * input_q;
-					append(Cola_2, proceso_append);
+					append(Cola_2, CPU);
 				}
-				else
+				else if (CPU->prioridad == 1)
 				{
-					cabeza0->proceso->count_s += 1;
+					append(Cola_1, CPU);
 				}
-				cabeza0 = cabeza0->next;
+				CPU = NULL;
+			}
+
+			else if (CPU->estado == 3)
+			{
+				// Escribir la DATA del proceso en el archivo
+				CPU = NULL;
 			}
 		}
+		
+		/* 3.2- Por cada proceso P comprobar si t=t_inicioP e ingresarlo a la primera cola */
+		for (int i = 0; i < input_file->len; i++)
+		{
+			if (list_process[i]->init_time == tiempo) 
+			{
+				list_process[i]->prioridad = 2;
+				list_process[i]->quantum = list_process[i]->prioridad * input_q;
+				append(Cola_2, list_process[i]);
+				contador_procesos += 1;
+			}
+		}
+
+		/* 3.3- Por cada proceso P en la segunda cola verificar si [(t - t_inicio)%S_P = 0] e ingresarlo a la primera cola */
+		check_envejecimiento(tiempo, Cola_1, Cola_2);
+		
+		/* 3.4- Por cada proceso P en la tercera cola verificar si [(t - t_inicio)%S_P = 0] e ingresarlo a la primera cola */
+		check_envejecimiento(tiempo, Cola_0, Cola_2);
+
+		/* [3.5-] Revisar envejecimiento del proceso en la CPU  */
+
 
 		/* 4.- Ingresar un proceso a la CPU (READY->RUNNING) */
 			/* El quantum se reinicia cada vez que se ingresa a la CPU */
 		// revisar Cola_2
 		if (Cola_2->proceso != NULL && CPU == NULL)
 		{
-			process_to_cpu(Cola_2, CPU);
+			CPU = process_to_cpu(Cola_2, CPU);
 			// aumentar el contador "turnos_cpu"
+			printf("El proceso %s sigue dentro de la CPU luego de la funcion\n", CPU->nombre); // ERROR?!?!?!
 		}
 
 		// revisar Cola_1
 		if (Cola_1->proceso != NULL && CPU == NULL)
 		{
-			process_to_cpu(Cola_1, CPU);
+			CPU = process_to_cpu(Cola_1, CPU);
 			// aumentar el contador "turnos_cpu"
 		}
 
 		// revisar Cola_0 
 		if (Cola_0->proceso != NULL && CPU == NULL)
 		{
-			process_to_cpu(Cola_0, CPU);
+			CPU = process_to_cpu(Cola_0, CPU);
 			// aumentar el contador "turnos_cpu"
 		}
+		// printf("El proceso %s sigue dentro de la CPU luego de la funcion\n", CPU->nombre);
 
-		// printf("Este es el final del while en el tiempo t=%d\n", tiempo);
+		printf("Este es el final del while en el tiempo t=%d\n", tiempo);
 		tiempo += 1;
 
 	}
@@ -300,6 +286,3 @@ int main(int argc, char const *argv[])
 	input_file_destroy(input_file);
 
 }
-
-
-

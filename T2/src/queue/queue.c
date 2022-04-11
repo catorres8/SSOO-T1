@@ -110,9 +110,10 @@ Process* pop_head(Nodo* cola)
 
 Process* pop_nodo(Nodo* cabeza, Nodo* objetivo)
 {
+    Process* proceso = NULL;
     if (cabeza == objetivo)
     {
-        Process* proceso = cabeza->proceso;
+        proceso = cabeza->proceso;
         if (cabeza->next != NULL)
         {
             cabeza = cabeza->next;
@@ -122,19 +123,22 @@ Process* pop_nodo(Nodo* cabeza, Nodo* objetivo)
         {
             cabeza->proceso = NULL;
         }
-        return proceso;
     }
-
-    Nodo* nodo_anterior = cabeza;
-    Nodo* nodo_actual = cabeza->next;
-    while (nodo_actual != objetivo)
+    else
     {
-        nodo_anterior = nodo_actual;
-        nodo_actual = nodo_actual->next;
+        Nodo* nodo_anterior = cabeza;
+        Nodo* nodo_actual = cabeza->next;
+        while (nodo_actual != objetivo)
+        {
+            nodo_anterior = nodo_actual;
+            nodo_actual = nodo_actual->next;
+        }
+        proceso = nodo_actual->proceso;
+        nodo_anterior->next = nodo_actual->next; // Conecto el nodo_anterior con el sucesor del nodo_actual
+        //IMPORTANTE: eliminar nodo_actual
     }
-    Process* proceso = nodo_actual->proceso;
-    nodo_anterior->next = nodo_actual->next; // Conecto el nodo_anterior con el sucesor del nodo_actual
-    //IMPORTANTE: eliminar nodo_actual
-
+    if (cabeza->proceso){
+        printf("Luego del Pop, la cabeza contiene al proceso %s\n", cabeza->proceso->nombre);
+    }
     return proceso;
 }

@@ -19,7 +19,9 @@ typedef struct nodo
 
 // Declare functions
 Nodo* init(Process* proceso, int tipo);
-void append(Nodo* nodo, Process* proceso);
+Nodo* append(Nodo* nodo, Process* proceso);
 Nodo* insertar_ordenado(Nodo* inicio, Nodo* nuevo);
 Process* pop_head(Nodo* cola);
-Process* pop_nodo(Nodo* cabeza, Nodo* objetivo);
+Nodo* pop_nodo(Nodo* cabeza, Nodo* objetivo);
+void Borrar(Nodo *cola, Nodo objetivo);
+

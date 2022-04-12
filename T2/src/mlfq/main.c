@@ -7,6 +7,31 @@
 
 
 /* Funcion que asigna un Proceso a la CPU dependiendo de la Cola y el Estado del Proceso */
+// Process* process_to_cpu(Nodo* cola, Process* CPU)
+// {
+// 	Nodo* nodo_actual = cola;
+// 	while (nodo_actual)
+// 	{
+// 		if (nodo_actual->proceso)
+// 		{
+// 			if (nodo_actual->proceso->estado == 0)
+// 			{	
+// 				printf("Se asignara a la CPU el proceso %s\n", nodo_actual->proceso->nombre);
+// 				CPU = nodo_actual->proceso;
+// 				cola = pop_nodo(cola, nodo_actual);
+// 				// Borrar(cola, nodo_actual);
+// 				CPU->estado = 1;
+// 				CPU->turnos_cpu += 1;
+// 				CPU->count_running = 0;
+// 				break;
+// 			}
+// 		}
+// 		nodo_actual = nodo_actual->next;
+// 	}
+// 	printf("Se asigno a la CPU el proceso %s\n", CPU->nombre);
+// 	return CPU;
+// }
+
 Process* process_to_cpu(Nodo* cola, Process* CPU)
 {
 	Nodo* nodo_actual = cola;
@@ -15,11 +40,14 @@ Process* process_to_cpu(Nodo* cola, Process* CPU)
 		if (nodo_actual->proceso)
 		{
 			if (nodo_actual->proceso->estado == 0)
-			{
-				CPU = pop_nodo(cola, nodo_actual);
+			{	
+				printf("Se asignara a la CPU el proceso %s\n", nodo_actual->proceso->nombre);
+				CPU = nodo_actual->proceso;
+				cola = pop_nodo(cola, nodo_actual);
+				// Borrar(cola, nodo_actual);
 				if (cola->proceso)
-				{
-					printf("Luego del pop (2) la cabeza tiene al proceso %s\n", nodo_actual->proceso->nombre);	
+				{	
+					printf("Luego del pop (2) la cabeza tiene al proceso %s\n", cola->proceso->nombre);	
 				}
 				CPU->estado = 1;
 				CPU->turnos_cpu += 1;
@@ -29,8 +57,10 @@ Process* process_to_cpu(Nodo* cola, Process* CPU)
 		}
 		nodo_actual = nodo_actual->next;
 	}
+	printf("Se asigno a la CPU el proceso %s\n", CPU->nombre);
 	return CPU;
 }
+
 
 /* Funcion que cambia del Estado WAITING a READY de un Proceso dependiendo de la Cola y el Estado del Proceso */
 void wait_to_ready(Nodo* Cola)
@@ -58,7 +88,7 @@ void wait_to_ready(Nodo* Cola)
 
 void check_envejecimiento(int time, Nodo* cola_inicio, Nodo* cola_final)
 {
-	Nodo* nodo_actual = cola_inicio;
+	Nodo* nodo_actual = cola_inicio; // Cola1 o Cola0
 	while (nodo_actual)
 	{	
 		if (nodo_actual->proceso)
@@ -66,8 +96,9 @@ void check_envejecimiento(int time, Nodo* cola_inicio, Nodo* cola_final)
 			if (((time - nodo_actual->proceso->init_time)%nodo_actual->proceso->s) == 0)
 			{
 				nodo_actual->proceso->prioridad = 2;
-				pop_nodo(cola_inicio, nodo_actual);
-				append(cola_final, nodo_actual->proceso);
+				cola_inicio = pop_nodo(cola_inicio, nodo_actual);
+				// Borrar(cola_inicio, nodo_actual);
+				cola_final = append(cola_final, nodo_actual->proceso);
 			}
 		}
 		nodo_actual = nodo_actual->next;
@@ -137,11 +168,12 @@ int main(int argc, char const *argv[])
 	int contador_procesos = 0;
 	// Inicio del Bucle del Scheduler
 	while (
-		Cola_2->proceso != NULL ||
+		(Cola_2->proceso != NULL ||
 		Cola_1->proceso != NULL ||
 		Cola_0->proceso != NULL ||
 		CPU != NULL ||
-		contador_procesos <= input_file->len
+		contador_procesos <= input_file->len) &&
+		(tiempo < 151)
 		)
 	{
 		/* 1.- Actualizar procesos que cumplen su I/O-Burst (WAITING->READY) */
@@ -169,28 +201,36 @@ int main(int argc, char const *argv[])
 			if (CPU->count_cycles < CPU->cycles)
 			{
 				CPU->count_running += 1;
+				CPU->contador_rafagas +=1;
 				if (CPU->count_running < CPU->quantum)
 				{
-					if (CPU->count_running == CPU->wait)
+					if (CPU->contador_rafagas == CPU->wait)
 					{
 						/* Cuando un proceso cede el control de la CPU, aumenta su prioridad */
 						CPU->estado = 2;
-						CPU->count_waiting = 0;
+						CPU->contador_rafagas = 0;
 						CPU->count_running = 0;
 						if (CPU->prioridad < 2) 
 						{
 							CPU->prioridad += 1;
+							CPU->quantum = CPU->prioridad * input_q;
 						}
 					}
 				}
 				else
 				{
+
 					/* Cuando un proceso usa todo su quantum en una detreminada Cola, se reduce su prioridad */
 					CPU->estado = 0;
 					CPU->interrupciones += 1;
 					if (CPU->prioridad > 0)
 					{
 						CPU->prioridad -= 1;
+						CPU->quantum = CPU->prioridad * input_q;
+					}
+					if (CPU->prioridad == 0)
+					{
+						CPU->quantum = CPU->wait - CPU->contador_rafagas;
 					}
 					//aumentar el contador "Interrupciones"
 				}
@@ -200,9 +240,9 @@ int main(int argc, char const *argv[])
 				CPU->estado = 3;
 				// Calculcar TurnAround
 			}
-			printf("2.2- El proceso %s en CPU lleva un Cycle %d/%d\n", CPU->nombre, CPU->count_cycles, CPU->cycles);
-			printf("2.2- El proceso %s en CPU lleva un quantum %d/%d\n", CPU->nombre, CPU->count_running, CPU->quantum);
-			printf("2.2- El proceso %s en CPU lleva un wait %d/%d\n", CPU->nombre, CPU->count_running, CPU->wait);
+			//printf("2.2- El proceso %s en CPU lleva un Cycle %d/%d\n", CPU->nombre, CPU->count_cycles, CPU->cycles);
+			//printf("2.2- El proceso %s en CPU lleva un quantum %d/%d\n", CPU->nombre, CPU->count_running, CPU->quantum);
+			//printf("2.2- El proceso %s en CPU lleva un wait %d/%d\n", CPU->nombre, CPU->count_running, CPU->wait);
 		}
 		/* 3.- Asignar los procesos a sus respectivas Colas */
 		/* 3.1- Si un proceso salio de la CPU, ingresarlo a la cola correspondiente */
@@ -212,18 +252,25 @@ int main(int argc, char const *argv[])
 			{
 				if (CPU->prioridad == 2)
 				{
-					append(Cola_2, CPU);
+					Cola_2 = append(Cola_2, CPU);
 					printf("3.1.1- El proceso %s deja la CPU hacia Cola2 en tiempo %d\n", CPU->nombre, tiempo);
 				}
 				else if (CPU->prioridad == 1)
 				{
-					append(Cola_1, CPU);
+					Cola_1 = append(Cola_1, CPU);
 					printf("3.1.1- El proceso %s deja la CPU hacia Cola1 en tiempo %d\n", CPU->nombre, tiempo);
 				}
 				else
 				{
-					append(Cola_0, CPU);
+					printf("El proceso %s tiene un quantum para la cola0 de %d\n", CPU->nombre, CPU->quantum);
+					Cola_0 = append(Cola_0, CPU);
 					printf("3.1.1- El proceso %s deja la CPU hacia Cola0 en tiempo %d\n", CPU->nombre, tiempo);
+					/// IMPRESION DE LA COLA 0
+					Nodo* cola_aux = Cola_0;
+					while (cola_aux) {
+						printf("este es un nodo de cola 0: %s\n", cola_aux->proceso->nombre);
+						cola_aux = cola_aux->next;
+					}
 				}
 				CPU = NULL;
 			}
@@ -232,12 +279,12 @@ int main(int argc, char const *argv[])
 			{
 				if (CPU->prioridad == 2)
 				{
-					append(Cola_2, CPU);
+					Cola_2 = append(Cola_2, CPU);
 					printf("3.1.2- El proceso %s deja la CPU hacia Cola0 en tiempo %d\n", CPU->nombre, tiempo);
 				}
 				else if (CPU->prioridad == 1)
 				{
-					append(Cola_1, CPU);
+					Cola_1 = append(Cola_1, CPU);
 					printf("3.1.2- El proceso %s deja la CPU hacia Cola0 en tiempo %d\n", CPU->nombre, tiempo);
 				}
 				CPU = NULL;
@@ -259,7 +306,7 @@ int main(int argc, char const *argv[])
 				printf("3.2- El proceso %s, entra al sistema(Cola2) en el tiempo %d\n", list_process[i]->nombre, tiempo);
 				list_process[i]->prioridad = 2;
 				list_process[i]->quantum = list_process[i]->prioridad * input_q;
-				append(Cola_2, list_process[i]);
+				Cola_2 = append(Cola_2, list_process[i]);
 				contador_procesos += 1;
 			}
 		}
@@ -277,47 +324,87 @@ int main(int argc, char const *argv[])
 			/* El quantum se reinicia cada vez que se ingresa a la CPU */
 		// revisar Cola_2
 		if (Cola_2->proceso != NULL && CPU == NULL)
-		{
+		{	//desde aqui partia process_to_Cpu
 			Nodo* nodo_actual = Cola_2;
-			int contador_nodos = 0;
 			while (nodo_actual)
 			{
 				if (nodo_actual->proceso)
 				{
-					printf("\t4.0- Este es el proceso %s en el nodo %d de Cola2 en tiempo=%d\n", nodo_actual->proceso->nombre, contador_nodos, tiempo);
+					if (nodo_actual->proceso->estado == 0)
+					{	
+						CPU = nodo_actual->proceso;
+						Cola_2 = pop_nodo(Cola_2, nodo_actual);
+						
+						CPU->estado = 1;
+						CPU->turnos_cpu += 1;
+						CPU->count_running = 0;
+						break;
+					}
 				}
 				nodo_actual = nodo_actual->next;
-				contador_nodos += 1;
 			}
-			
-			CPU = process_to_cpu(Cola_2, CPU);
 			printf("4- Ingresa a CPU el proceso %s desde Cola2 en tiempo %d\n", CPU->nombre, tiempo);
-
-			Nodo* nodo_actual1 = Cola_2;
-			int contador_nodos1 = 0;
-			while (nodo_actual1)
-			{
-				if (nodo_actual1->proceso)
-				{
-					printf("\t4.0- Este es el proceso %s en el nodo %d de Cola2 en tiempo=%d\n", nodo_actual1->proceso->nombre, contador_nodos1, tiempo);
-				}
-				nodo_actual1 = nodo_actual1->next;
-				contador_nodos1 += 1;
-			}
+			if(Cola_2->proceso)
+			{printf("4- La Cola2 tiene en la cabeza al proceso %s\n", Cola_2->proceso->nombre);}
 		}
 
 		// revisar Cola_1
 		if (Cola_1->proceso != NULL && CPU == NULL)
 		{
-			CPU = process_to_cpu(Cola_1, CPU);
+			//CPU = process_to_cpu(Cola_1, CPU);
+			Nodo* nodo_actual = Cola_1;
+			while (nodo_actual)
+			{
+				if (nodo_actual->proceso)
+				{
+					if (nodo_actual->proceso->estado == 0)
+					{	
+						CPU = nodo_actual->proceso;
+						Cola_1 = pop_nodo(Cola_1, nodo_actual);
+						// Borrar(cola, nodo_actual);
+						CPU->estado = 1;
+						CPU->turnos_cpu += 1;
+						CPU->count_running = 0;
+						break;
+					}
+				}
+				nodo_actual = nodo_actual->next;
+			}
+
 			// aumentar el contador "turnos_cpu"
 			printf("4- Ingresa a CPU el proceso %s desde Cola1 en tiempo %d\n", CPU->nombre, tiempo);
+			if(Cola_1->proceso)
+			{printf("4- La Cola1 tiene en la cabeza al proceso %s\n", Cola_1->proceso->nombre);}
 		}
 
 		// revisar Cola_0 
 		if (Cola_0->proceso != NULL && CPU == NULL)
 		{
-			CPU = process_to_cpu(Cola_0, CPU);
+			//CPU = process_to_cpu(Cola_0, CPU);
+			Nodo* nodo_actual = Cola_0;
+			while (nodo_actual)
+			{
+				if (nodo_actual->proceso)
+				{
+					if (nodo_actual->proceso->estado == 0)
+					{	
+						CPU = nodo_actual->proceso;
+						Cola_0 = pop_nodo(Cola_0, nodo_actual);
+						
+						CPU->estado = 1;
+						CPU->turnos_cpu += 1;
+						CPU->count_running = 0;
+						break;
+					}
+				}
+				nodo_actual = nodo_actual->next;
+			}
+			printf("4- Ingresa a CPU el proceso %s desde Cola0 en tiempo %d\n", CPU->nombre, tiempo);
+			if(Cola_0->proceso)
+			{printf("4- La Cola0 tiene en la cabeza al proceso %s\n", Cola_0->proceso->nombre);}
+
+
+			
 			// aumentar el contador "turnos_cpu"
 			printf("4- Ingresa a CPU el proceso %s desde Cola0 en tiempo %d\n", CPU->nombre, tiempo);
 		}

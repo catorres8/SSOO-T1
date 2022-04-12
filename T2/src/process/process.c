@@ -28,6 +28,7 @@ Process* process_init(char* name, char* pid, char* t_inicio, char* cycles, char*
         .count_running = 0, // listo 
         .count_cycles = 0, // listo
         .count_s = 0,      // listo
+        .contador_rafagas = 0,
     };
 
     return proceso;

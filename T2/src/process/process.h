@@ -32,6 +32,7 @@ typedef struct process
     int count_running;
     int count_cycles;
     int count_s;
+    int contador_rafagas;
 } Process;
 
 // Declare functions

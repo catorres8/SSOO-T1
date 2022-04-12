@@ -20,7 +20,7 @@ Nodo* init(Process* proceso, int tipo)
     return cola;
 }
 
-void append(Nodo* cabeza, Process* proceso)
+Nodo* append(Nodo* cabeza, Process* proceso)
 
 {   //si lista es vacia
     if (cabeza->proceso == NULL)
@@ -45,6 +45,7 @@ void append(Nodo* cabeza, Process* proceso)
         Nodo* nodo_nuevo = init(proceso, 1);
         cabeza = insertar_ordenado(cabeza, nodo_nuevo);
     }
+    return cabeza;
 }
 
 
@@ -58,11 +59,12 @@ Nodo* insertar_ordenado(Nodo* inicio, Nodo* nuevo) { //ese inicio en el main se 
     }
 
     // si el elemento es el menor
-    if (nuevo->proceso->cycles < inicio->proceso->cycles) {
+    if (nuevo->proceso->quantum < inicio->proceso->quantum) {
     nuevo->next = inicio;
     inicio = nuevo;
+    printf("{insertar} Nombre del proceso inicio %s\n", inicio->proceso->nombre);
+    return inicio;
     }
-
     // CASO EN QUE ELEMENTO ES MAYOR A TODOS O INTERMEDIO: 
     //para esto buscamos posicion usando una variable auxiliar (que es puntero a Queue), que contrendra la direccion de memoria
     //del 1ª nodo de de la lista.
@@ -70,7 +72,7 @@ Nodo* insertar_ordenado(Nodo* inicio, Nodo* nuevo) { //ese inicio en el main se 
         //Guardamos el inicio de la lista
         Nodo* aux = inicio;
         //nos movemos por los elementos de la lista
-        while (aux->next != NULL && aux->next->proceso->cycles  <  nuevo->proceso->cycles) {
+        while (aux->next != NULL && aux->next->proceso->quantum  <  nuevo->proceso->quantum) {
             aux = aux->next;
             
         }
@@ -79,7 +81,7 @@ Nodo* insertar_ordenado(Nodo* inicio, Nodo* nuevo) { //ese inicio en el main se 
             aux->next = nuevo;
         }
         // si el elemento es intermedio
-        if (aux->next->proceso->cycles > nuevo->proceso->cycles) {
+        if (aux->next->proceso->quantum > nuevo->proceso->quantum) {
             nuevo->next = aux->next;
             aux->next = nuevo;
         }
@@ -87,6 +89,8 @@ Nodo* insertar_ordenado(Nodo* inicio, Nodo* nuevo) { //ese inicio en el main se 
     }
     return inicio;
 }
+
+
 
 /* 
 Funcion que entrega el Proceso del NodoCabeza de la Cola,
@@ -108,37 +112,32 @@ Process* pop_head(Nodo* cola)
     return proceso;
 }
 
-Process* pop_nodo(Nodo* cabeza, Nodo* objetivo)
+Nodo* pop_nodo(Nodo *cabeza, Nodo* objetivo)
 {
-    Process* proceso = NULL;
-    if (cabeza == objetivo)
+    Nodo* nodo_anterior = NULL;
+    Nodo* nodo_actual = cabeza;
+    while (nodo_actual!=objetivo)
     {
-        proceso = cabeza->proceso;
-        if (cabeza->next != NULL)
-        {
-            cabeza = cabeza->next;
-            //IMPORTANTE: eliminar cabeza
-        }
-        else
+        nodo_anterior = nodo_actual;
+        nodo_actual = nodo_actual->next;
+    }
+    if (nodo_anterior == NULL) // Primer elemento (Cabeza)
+    {
+        if (nodo_actual->next == NULL)
         {
             cabeza->proceso = NULL;
         }
-    }
-    else
-    {
-        Nodo* nodo_anterior = cabeza;
-        Nodo* nodo_actual = cabeza->next;
-        while (nodo_actual != objetivo)
+        else
         {
-            nodo_anterior = nodo_actual;
-            nodo_actual = nodo_actual->next;
+            cabeza = nodo_actual->next; // .next = Null
+            cabeza->proceso = nodo_actual->next->proceso;
         }
-        proceso = nodo_actual->proceso;
-        nodo_anterior->next = nodo_actual->next; // Conecto el nodo_anterior con el sucesor del nodo_actual
-        //IMPORTANTE: eliminar nodo_actual
+        return cabeza;
     }
-    if (cabeza->proceso){
-        printf("Luego del Pop, la cabeza contiene al proceso %s\n", cabeza->proceso->nombre);
+    else // Otro elemento
+    {
+        nodo_anterior->next = nodo_actual->next;
+        //free(nodo_actual);
+        return cabeza;
     }
-    return proceso;
 }

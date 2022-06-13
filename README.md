@@ -26,19 +26,19 @@ Cuando el paquete se encuentra en el servidor DNS, y el último dispositivo visi
 **En las CAPAS DE ENTRADA**:
 
 * **Capa 1**: Puerto fastEthernet 0/1
-   1. Fe0/1 recibe el frame.
+   1. FastEtherne 0/1 recibe el frame.
 
-* **Capa 2:** Encabezado Ethernet II 000A.F3D7.0616 >> 00E0.F700.45D2
+* **Capa 2:** Header Ethernet II 000A.F3D7.0616 >> 00E0.F700.45D2
    1. La dirección MAC de origen del frame no existe en la tabla MAC de Switch. Switch agrega una nueva entrada MAC a su tabla.
    2. Esta es un frame de unidifusión. Switch busca en su tabla MAC la dirección MAC de destino.
 
 **En las CAPAS DE SALIDA**:
 
-* **Capa 1**: Puerto(s): FastEthernet 1/1
+* **Capa 1**: Puerto: FastEthernet 1/1
    1. FastEthernet1/1 envía el frame.
 
-* **Capa 2**: Encabezado Ethernet II 000A.F3D7.0616 >> 00E0.F700.45D2
-   1. El puerto de salida es un puerto de acceso. El conmutador envía el frame por ese puerto.
+* **Capa 2**: Header Ethernet II 000A.F3D7.0616 >> 00E0.F700.45D2
+   1. El puerto de salida es un puerto de acceso. El Switch envía el frame por ese puerto.
 
 
 

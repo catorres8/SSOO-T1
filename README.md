@@ -1,4 +1,4 @@
-# ** [T3] RESPUESTAS A LA PREGUNTA IV: SIMULACIÓN :jack_o_lantern: **
+# **[T3] RESPUESTAS A LA PREGUNTA IV: SIMULACIÓN :jack_o_lantern:**
 * * *
 
 *Grupo:* Nicole Marín, Cristobal Torres

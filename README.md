@@ -81,7 +81,5 @@ Primero un paquete DNS sale desde el Laptop Familia, paquete en el cual el clien
 
 Es aquí cuando el Cliente HTTP envía una solicitud HTTP al servidor Disney, a través de un paquete HTTP. El paquete pasa por Wireless Router Manolito, y por el Router Giveaway Manolito, para llegar al Router Central. Es en este lugar en donde el paquete se envía hacia la red Disney. En primer lugar ingresa al Switch Disney, para dirigirse al servidor Disney, en donde el servidor entonces recibe una solicitud HTTP, y luego llega al servidor devuelve una respuesta HTTP al cliente. El paquete se dirige ahora hacia la red Manolito, pasando por el Switch Disney hacia el Router Central. El paquete es transferido por el Router Giveaway Manolito, hacia el Wireless Router, y finalmente es recepcionado por el Laptop Familia, en donde finalmente el cliente HTTP recibe la respuesta HTTP del servidor, mostrando la página ```www.disneyplus.com``` en el navegador web.
 
-
-FALTA FOTO
-----------------------------------------
+En la siguiente imagen se puede ver el flujo completo de los paquetes de manera más gráfica.
 ![Error al cargar la imagen](/flujo_paquetes.jpg "Flujo de Paquetes DNS y HTTP en la simulación")

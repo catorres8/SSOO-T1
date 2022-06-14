@@ -54,7 +54,7 @@ El largo del http Request del paquete HTTP es de **107 bytes**.
 Los paquetes que se usan son de tipo DNS y HTTP. 
 Se utiliza paquete DNS porque es necesario este tipo de estructura y contenido para que el servidor DNS sea capaz de traducir el nombre de dominio de Disneyplus a su direcciones IP para que el web browser del Laptop de Manolito pueda cargar la página.
 
-Por otro lado, de usa paquete HTTP ya que es necesario este tipo de estructura para poder usar el protocolo HTTP, que es el protocolo de transferencia de archivos de hiper-texto entre clientes y servidores HTTP. Entonces para poder transferir el archivo de texto (el html de la pagina web)  primero se evía desde el laptop de Manolito un paquete HTTP request, solicitando la página web, y posteriormente desde el servidor Disney, se envía paquete HTTP response, con el cual finalmente se renderiza el html en el Laptop de Manolito. 
+Por otro lado, se usa paquete HTTP ya que es necesario este tipo de estructura para poder usar el protocolo HTTP, que es el protocolo de transferencia de archivos de hiper-texto entre clientes y servidores HTTP. Entonces para poder transferir el archivo de texto (el html de la pagina web)  primero se evía desde el laptop de Manolito un paquete HTTP request, solicitando la página web, y posteriormente desde el servidor Disney, se envía paquete HTTP response, con el cual finalmente se renderiza el html en el Laptop de Manolito. 
 
 Cada **paquete DNS** contiene la información necesaria para hacer la consulta al Servidor DNS, o la Respuesta al Cliente DNS, por lo cual se estructuran de la siguiente manera:
 
